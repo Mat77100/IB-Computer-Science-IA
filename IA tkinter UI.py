@@ -23,12 +23,14 @@ ReminderCanvas.bind("<Configure>", lambda event: ReminderCanvas.itemconfigure(Re
 ReminderCanvas.bind_all("<MouseWheel>", lambda event: ReminderCanvas.yview_scroll(-int(event.delta/120),"units"))
 ReminderFrameList.configure(bg="Grey")
 
-'''
-testReminder = tk.Frame(ReminderFrameList,bg="blue",height=10000)
-testRemindertext = tk.Label(testReminder, text="HELLO WORLD")
-testRemindertext.pack()
-testReminder.pack(fill="x",padx=10,pady=10,)
-testReminder.pack_propagate(False)
-'''
+def TEST():
+    testReminder = tk.Frame(ReminderFrameList,bg="blue",height=100)
+    testRemindertext = tk.Label(testReminder, text="HELLO WORLD")
+    testRemindertext.pack()
+    testReminder.pack(fill="x",padx=10,pady=10,)
+    testReminder.pack_propagate(False)
+
+AddNewReminderTest = tk.Button(Main,command=TEST,text="New Reminder TEST")
+AddNewReminderTest.pack(side="bottom",anchor="w",padx=10,pady=10)
 
 Main.mainloop()

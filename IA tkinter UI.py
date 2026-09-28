@@ -41,6 +41,7 @@ class Reminder():
         self.DueDate = DueDate
         self.Priority = Priority
         self.Attachments = Attachments
+        self.DeleteConfirm = 3
     def Edit(self, On_update=None):
         Editor = tk.Toplevel(self.Main)
         Editor.title("Edit")
@@ -87,6 +88,8 @@ class Reminder():
         def Cancel():
             Editor.destroy()
 
+        
+
         SaveBtn = tk.Button(Editor,command=Save,text="Save",width=20)
         CancelBtn = tk.Button(Editor,command=Cancel,text="Cancel",width=20)
 
@@ -103,8 +106,9 @@ def TEST():
     testReminder.pack_propagate(False)
     tk.Button(testReminder,command=testReminder.destroy).pack()
 '''
+
 def CreateReminder():
-    ReminderObj = Reminder(Main,"Reminder","","TESTING","01/01/27","low","N/A")
+    ReminderObj = Reminder(Main,"Reminder","","TESTING","01/01/27","low","N/A") #Might be worth refrencing the reminder obj into a list of sorts in order to make saving easier
     ReminderObj.Edit()
     NewReminder = tk.Frame(ReminderFrameList,bg="white",height=100)
     NewReminder.config(bg="#A6A6A6")
@@ -130,11 +134,21 @@ def CreateReminder():
         Priority.config(text=ReminderObj.Priority)
         Attachments.config(text=ReminderObj.Attachments)
 
+    def DeleteReminder():
+        if ReminderObj.DeleteConfirm != 1:
+            ReminderObj.DeleteConfirm -= 1
+            DelBtn.config(text=f"Delete: x{ReminderObj.DeleteConfirm}")
+            return
+        else:
+            NewReminder.destroy()
+
+    DelBtn = tk.Button(NewReminder,text=f"Delete: x{ReminderObj.DeleteConfirm}",command=DeleteReminder,bg="red")
     EditBtn = tk.Button(NewReminder,text="Edit",command=lambda:ReminderObj.Edit(UpdateReminder))
     EditBtn.pack()
+    DelBtn.pack()
     NewReminder.pack(fill="x",padx=10,pady=10)
 
-#ADD A DELETE BUTTON TO REMINDER
+
 
 
 AddNewReminderTest = tk.Button(Main,command=CreateReminder,text="New Reminder")

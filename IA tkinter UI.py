@@ -1,9 +1,18 @@
 #main tkinter UI
 import tkinter as tk
 
+
+#COLOUR PALETTE HEX CODE(dark --> light):
+"#141414"
+"#4F4F4F"
+"#878787"
+"#A6A6A6"
+"#D1D1D1"
+
+
 Main = tk.Tk()
 Main.geometry("1000x600")
-Main.configure(bg="dark grey")
+Main.configure(bg="#878787")
 Main.title("Reminder App")
 
 
@@ -11,7 +20,7 @@ ReminderCanvas = tk.Canvas(Main)
 
 RemiderScrollBar = tk.Scrollbar(Main)
 RemiderScrollBar.config(command=ReminderCanvas.yview,troughcolor="black",bg="light grey")
-ReminderCanvas.config(yscrollcommand=RemiderScrollBar.set,bg="grey",width=700,highlightthickness=0)
+ReminderCanvas.config(yscrollcommand=RemiderScrollBar.set,bg="#4F4F4F",width=700,highlightthickness=0)
 
 RemiderScrollBar.pack(side="right",fill="y")
 ReminderCanvas.pack(side=("right"),fill="both",padx=15,pady=15)
@@ -21,7 +30,7 @@ ReminderWindow = ReminderCanvas.create_window((0,0),window=ReminderFrameList, an
 ReminderFrameList.bind("<Configure>", lambda event: ReminderCanvas.configure(scrollregion=ReminderCanvas.bbox("all")))
 ReminderCanvas.bind("<Configure>", lambda event: ReminderCanvas.itemconfigure(ReminderWindow,width=event.width))
 ReminderCanvas.bind_all("<MouseWheel>", lambda event: ReminderCanvas.yview_scroll(-int(event.delta/120),"units"))
-ReminderFrameList.configure(bg="Grey")
+ReminderFrameList.configure(bg="#4F4F4F")
 
 class Reminder():
     def __init__(self,Tk,Title,Description,Categories,DueDate,Priority,Attachments):
@@ -32,10 +41,10 @@ class Reminder():
         self.DueDate = DueDate
         self.Priority = Priority
         self.Attachments = Attachments
-    def Edit(self):
+    def Edit(self, On_update=None):
         Editor = tk.Toplevel(self.Main)
         Editor.title("Edit")
-        Editor.geometry("500x300")
+        Editor.geometry("300x200")
         ChangedTitle = tk.Entry(Editor)
         ChangedTitle.insert(0,self.Title)
 
@@ -70,20 +79,22 @@ class Reminder():
             self.Priority = ChangedPriority.get() #CHANGE TO LIMIT TO SPECIFIC PRIORITYS (LOW MEDIUM HIGH)
             self.Attachments = ChangedAttachments.get() #NEEDS TO BE CHANGED TO SUPPORT ATTACHMENTS
 
+            if On_update:
+                On_update()
+
             Editor.destroy()
 
         def Cancel():
             Editor.destroy()
 
-        SaveBtn = tk.Button(Editor,command=Save,text="Save")
-        CancelBtn = tk.Button(Editor,command=Cancel,text="Cancel")
+        SaveBtn = tk.Button(Editor,command=Save,text="Save",width=20)
+        CancelBtn = tk.Button(Editor,command=Cancel,text="Cancel",width=20)
 
-        SaveBtn.pack()
-        CancelBtn.pack()
-        #CHANGE WHERE THEY ARE PLACED TO BOTTOM CORNER
+        SaveBtn.place(relx=1.0,rely=1.0,anchor="se")
+        CancelBtn.place(relx=0.0,rely=1,anchor="sw")
         Editor.wait_window()
 
-
+'''
 def TEST():
     testReminder = tk.Frame(ReminderFrameList,bg="blue",height=100)
     testRemindertext = tk.Label(testReminder, text="HELLO WORLD")
@@ -91,11 +102,12 @@ def TEST():
     testReminder.pack(fill="x",padx=10,pady=10,)
     testReminder.pack_propagate(False)
     tk.Button(testReminder,command=testReminder.destroy).pack()
-
+'''
 def CreateReminder():
     ReminderObj = Reminder(Main,"Reminder","","TESTING","01/01/27","low","N/A")
     ReminderObj.Edit()
     NewReminder = tk.Frame(ReminderFrameList,bg="white",height=100)
+    NewReminder.config(bg="#A6A6A6")
     Text = tk.Label(NewReminder,text=ReminderObj.Title)
     Description = tk.Label(NewReminder,text=ReminderObj.Description)
     Categories = tk.Label(NewReminder,text=ReminderObj.Categories)
@@ -118,9 +130,11 @@ def CreateReminder():
         Priority.config(text=ReminderObj.Priority)
         Attachments.config(text=ReminderObj.Attachments)
 
-    EditBtn = tk.Button(NewReminder,text="Edit",command=lambda:ReminderObj.Edit(UpdateReminder)) #ADD ON UPDATE IN THE REMINDER CLASS SAVE FUNCTION TO SAVE
+    EditBtn = tk.Button(NewReminder,text="Edit",command=lambda:ReminderObj.Edit(UpdateReminder))
     EditBtn.pack()
     NewReminder.pack(fill="x",padx=10,pady=10)
+
+#ADD A DELETE BUTTON TO REMINDER
 
 
 AddNewReminderTest = tk.Button(Main,command=CreateReminder,text="New Reminder")

@@ -112,15 +112,15 @@ def CreateReminder():
     ReminderObj.Edit()
     NewReminder = tk.Frame(ReminderFrameList,bg="white",height=100)
     NewReminder.config(bg="#A6A6A6")
-    Text = tk.Label(NewReminder,text=ReminderObj.Title)
-    Description = tk.Label(NewReminder,text=ReminderObj.Description)
+    Text = tk.Label(NewReminder,text=ReminderObj.Title,bg="#6B6B6B",fg="#FFFFFF",font=("",25,"bold"),wraplength=300, justify="left")
+    Description = tk.Label(NewReminder,text=ReminderObj.Description,bg="#6B6B6B",fg="#FFFFFF",font=("",10,"bold"))
     Categories = tk.Label(NewReminder,text=ReminderObj.Categories)
     DueDate = tk.Label(NewReminder,text=ReminderObj.DueDate)
     Priority = tk.Label(NewReminder,text=ReminderObj.Priority)
     Attachments = tk.Label(NewReminder,text=ReminderObj.Attachments)
 
-    Text.pack()
-    Description.pack()
+    Text.pack(anchor="w", padx=5,pady=5)
+    Description.pack(anchor="w", padx=5)
     Categories.pack()
     DueDate.pack()
     Priority.pack()
@@ -143,9 +143,9 @@ def CreateReminder():
             NewReminder.destroy()
 
     DelBtn = tk.Button(NewReminder,text=f"Delete: x{ReminderObj.DeleteConfirm}",command=DeleteReminder,bg="red")
-    EditBtn = tk.Button(NewReminder,text="Edit",command=lambda:ReminderObj.Edit(UpdateReminder))
+    EditBtn = tk.Button(NewReminder,text="Edit",command=lambda:ReminderObj.Edit(UpdateReminder)) #DISABLE WHEN EDIT WINDOW IS OPEN
     EditBtn.pack()
-    DelBtn.pack()
+    DelBtn.place(relx=0.961,rely=0.061, anchor="center")
     NewReminder.pack(fill="x",padx=10,pady=10)
 
 

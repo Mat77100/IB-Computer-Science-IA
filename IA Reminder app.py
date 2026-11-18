@@ -9,6 +9,21 @@ import tkinter as tk
 "#A6A6A6"
 "#D1D1D1"
 
+'''
+
+FIX UR FORMATTING MATE
+mainly:
+edit window needs info on what each entry is for (title, description, etc.)
+the formatting of the reminder data on the frame,
+thats all i can think of for now
+oh and fix bugs (obv)
+
+known bugs:
+u can open multiple edit windows
+closing the edit window when making a new reminder adds it anyway
+
+
+'''
 
 Main = tk.Tk()
 Main.geometry("1000x600")
@@ -109,9 +124,15 @@ def TEST():
 
 ReminderObjReferences = []
 
-def CreateReminder():
-    ReminderObj = Reminder(Main,"Reminder","","TESTING","01/01/27","low","N/A") #Might be worth refrencing the reminder obj into a list of sorts in order to make saving easier
-    ReminderObj.Edit()
+'''
+BIG ISSUE: Basically, creating a reminder opens the edit window, but pressing cancle still creates it
+'''
+
+def CreateReminder(Title, Description, Categories, DueDate, Priority, Attachments, Open_editor, ReminderObj): #for reminderObj, feed in old one if needed, otherwise feed False
+    if not ReminderObj:
+        ReminderObj = Reminder(Main,Title,Description,Categories,DueDate,Priority,Attachments) 
+    if Open_editor:
+        ReminderObj.Edit()
     NewReminder = tk.Frame(ReminderFrameList,bg="white",height=100)
     NewReminder.config(bg="#A6A6A6")
     Text = tk.Label(NewReminder,text=ReminderObj.Title,bg="#6B6B6B",fg="#FFFFFF",font=("",25,"bold"),wraplength=300, justify="left")
@@ -150,26 +171,77 @@ def CreateReminder():
     EditBtn.pack()
     DelBtn.place(relx=0.961,rely=0.061, anchor="center")
     NewReminder.pack(fill="x",padx=10,pady=10)
-
-    ReminderObjReferences.append(ReminderObj)
+    if ReminderObj not in ReminderObjReferences:
+        ReminderObjReferences.append(ReminderObj) #This rat bastard caused me a few issus, first it alawys duplicated reminders when using a search, then it would straight up remove them, fixed now
 
 def SaveReminders():
-    for reminders in ReminderObjReferences: #temporary, now just write to file
-        print(reminders.Title)
-        print(reminders.Description)
-        print(reminders.Categories)
-        print(reminders.DueDate)
-        print(reminders.Priority)
-        print(reminders.Attachments)
-
-        
-    print(ReminderObjReferences)
+    with open("ReminderEntries.txt","w") as ReminderEntries:
+        for reminder in ReminderObjReferences: #possibly dont need thr **NEXT** as you know what each line is. altho u might want to keep just as like a chekck wheterh the next line hasa reminder
+                #ReminderEntries.write("**NEXT**\n") #MAKE SURE TO STOP USER FROM INPUTTING THIS IN ANY FEILD, JUST IN CASE. THIS IS TO CLASSIFY WHEN THE NEXT REMINDER IS
+                ReminderEntries.write(reminder.Title +"\n") #\n appends each to a new line
+                ReminderEntries.write(reminder.Description +"\n")
+                ReminderEntries.write(reminder.Categories +"\n")
+                ReminderEntries.write(reminder.DueDate +"\n")
+                ReminderEntries.write(reminder.Priority +"\n")
+                ReminderEntries.write(reminder.Attachments +"\n") #fix later, possible remove it
     Main.destroy() #This is so that it actually closes
 
 
-AddNewReminderTest = tk.Button(Main,command=CreateReminder,text="New Reminder")
+AddNewReminderTest = tk.Button(Main,command=lambda:CreateReminder("Reminder","","TESTING","01/01/27","low","N/A",True,False),text="New Reminder")
 AddNewReminderTest.pack(side="bottom",anchor="w",padx=10,pady=10)
 
 Main.protocol("WM_DELETE_WINDOW", SaveReminders) #Rebinds the x button that usally closes the window, rebinded to save fundtion
+
+#Readd saved reminders
+try:
+    with open("ReminderEntries.txt","r") as SavedReminders:
+        Entries = SavedReminders.readlines() #stores every line in the file
+        if Entries: #check to see if there are reminders
+            for i in range(0, len(Entries),6):
+                ReminderData = Entries[i:i+6]
+                CreateReminder(ReminderData[0].strip(),ReminderData[1].strip(),ReminderData[2].strip(),ReminderData[3].strip(),ReminderData[4].strip(),ReminderData[5].strip(),False,False)
+
+except:
+    pass #just to prevent an error when the file isnt there, like if the program has not ran for the first time
+
+
+#REMINDER SORTING, YAYYYYYYYYY
+SearchLabel = tk.Label(Main,text="Search: ",bg="#878787")
+SearchBar = tk.Entry(Main)
+SearchSelect = tk.BooleanVar(value=False) #check box only changes tkinter variables
+
+
+
+def Filter_with_search(SearchSelect): 
+    if SearchBar.get() == "":
+        for Frames in ReminderFrameList.winfo_children(): #is this ineffecient, probably, does it work, eh
+                Frames.destroy()
+        for Reminder in ReminderObjReferences:
+            CreateReminder(None,None,None,None,None,None,False,Reminder)
+        return
+        
+
+    Results = []
+
+    for ReminderObj in ReminderObjReferences:
+        if SearchBar.get().lower() in ReminderObj.Title.lower():
+            Results.append(ReminderObj)
+        if SearchSelect.get() and (SearchBar.get().lower() in ReminderObj.Description.lower()):
+            Results.append(ReminderObj)
+
+    for Frames in ReminderFrameList.winfo_children():
+        Frames.destroy()
+
+    for NewReminder in Results:
+        CreateReminder(None,None,None,None,None,None,False,NewReminder)
+
+SearchWithDescription = tk.Checkbutton(Main,text="Search description as well",onvalue=True,offvalue=False,variable=SearchSelect,bg="#878787",command=lambda:Filter_with_search(SearchSelect))
+
+SearchBar.bind("<KeyRelease>", lambda event: Filter_with_search(SearchSelect))
+
+
+SearchLabel.place(relx=0.02,rely=0.22)
+SearchBar.place(relx=0.02,rely=0.25)
+SearchWithDescription.place(relx=0.02,rely=0.30)
 
 Main.mainloop()

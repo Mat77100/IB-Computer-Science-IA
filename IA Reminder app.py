@@ -25,23 +25,23 @@ closing the edit window when making a new reminder adds it anyway
 
 '''
 
-Main = tk.Tk()
+Main = tk.Tk() #Creates the main tkinter window
 Main.geometry("1000x600")
-Main.configure(bg="#878787")
-Main.title("Reminder App")
+Main.configure(bg="#878787") #Resize the window and colour it grey
+Main.title("Reminder App") #Give a title
 
 
-ReminderCanvas = tk.Canvas(Main)
+ReminderCanvas = tk.Canvas(Main) #Create a canvas
 
-RemiderScrollBar = tk.Scrollbar(Main)
-RemiderScrollBar.config(command=ReminderCanvas.yview,troughcolor="black",bg="light grey")
-ReminderCanvas.config(yscrollcommand=RemiderScrollBar.set,bg="#4F4F4F",width=700,highlightthickness=0)
-
+RemiderScrollBar = tk.Scrollbar(Main) #Scrrollbar creation
+RemiderScrollBar.config(command=ReminderCanvas.yview) #Set scrollbar control to canvas yview
+ReminderCanvas.config(yscrollcommand=RemiderScrollBar.set,bg="#4F4F4F",width=700,highlightthickness=0) #If the canvas is scrolled by something else, set the scrollbar to match.
+                                                                                                        #Also sets the width and colour
 RemiderScrollBar.pack(side="right",fill="y")
-ReminderCanvas.pack(side=("right"),fill="both",padx=15,pady=15)
+ReminderCanvas.pack(side=("right"),fill="both",padx=15,pady=15) #packs the tkinter widgets so they display
 
-ReminderFrameList = tk.Frame(ReminderCanvas)
-ReminderWindow = ReminderCanvas.create_window((0,0),window=ReminderFrameList, anchor="nw")
+ReminderFrameList = tk.Frame(ReminderCanvas) #Creates the main frame that acts as the container for the other reminder frames
+ReminderWindow = ReminderCanvas.create_window((0,0),window=ReminderFrameList, anchor="nw") #places the frame into the canvas
 ReminderFrameList.bind("<Configure>", lambda event: ReminderCanvas.configure(scrollregion=ReminderCanvas.bbox("all")))
 ReminderCanvas.bind("<Configure>", lambda event: ReminderCanvas.itemconfigure(ReminderWindow,width=event.width))
 ReminderCanvas.bind_all("<MouseWheel>", lambda event: ReminderCanvas.yview_scroll(-int(event.delta/120),"units"))
